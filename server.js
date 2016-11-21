@@ -4,6 +4,14 @@ var express = require ('express');
 // Create the express server app (instance of express).
 var server = express ();
 
+// Make sure the body-parser has been installed
+// (npm install body-parser --save)
+var bodyParser = require ('body-parser');
+
+// Set express to use the body parser to pull the
+// data out of any POST requests from the browser.
+server.use (bodyParser.urlencoded ({ extended: true}));
+
 // Set the port that our server will run on.
 var port = 3000;
 
@@ -38,21 +46,12 @@ server.listen (port, function (error){
 //---------------------------------------
 // Set the url routes the server can use.
 
-// Home or root route.
-server.get ('/', function (request, response){
+// Import tin the routes to use.
+var basicRoutes = require ('./routes/basic.js');
 
-    // The response object is used to send responses back to the user
-    // who made the request.
+// Set our server to use the basic routes.
+server.use ('/', basicRoutes);
 
-    //response.send ('<h2>Hello World!</h2>');
-
-    // Have express render out the string/text markup response
-    // that will go to the client.
-    response.render ('home');
-
-});
-
-// About route
-server.get ('/about', function (request, response) {
-    response.render ('about');
-});
+// Connect the post routes.
+var postRoutes = require ('./routes/posts.js');
+server.use ('/post', postRoutes);
