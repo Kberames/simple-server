@@ -15,13 +15,13 @@ router.post ('/save', function (request, response) {
 
     // Use the request.body to pull data out of any
     // POST request object's data.
-    console.log ('test');
-    console.log ('body content: ' + request.body);
+    //console.log ('body content: ' + request.body);
 
     response.redirect ('/post');
 });
 
-router.get ('/redirect', function (request, response) {
+// To test redirection http://localhost:3000/post/redirect-test
+router.get ('/redirect-test', function (request, response) {
     // When this route is hit redirect to the
     // specified route.
     response.redirect ('/about');
