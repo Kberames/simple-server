@@ -31,22 +31,45 @@ server.set ('views', __dirname + '\\templates\\partials');
 // Set the render engine for our server.
 server.set ('view engine', '.hbs');
 
-//Launch the server app.
-server.listen (port, function (error){
-    // Check to see if the server was unable to startup
-    if (error !== undefined) {
-        console.error('*** ERROR: Unable to start the server.');
+// Bring in the MongoDB client driver and
+// connect to the database.
+var mongoClient = require ('mongodb').MongoClient;
+
+// Create a reference to the database.
+global.db;
+
+// Create a connection to the database.
+mongoClient.connect ('mongodb://localhost:27017/sample_database', function (error, database) {
+    // Check if there was an error connecting to the database.
+    if (error) {
+        console.error('*** ERROR: Unable to connect to the mongo database.');
         console.log (error);
         }
     else {
-        console.log (' - The server has successfully started on port: ' + port)
+        // All good to start the server app.
+        //Launch the server app.
+        server.listen (port, function (error){
+            // Check to see if the server was unable to startup
+            if (error !== undefined) {
+                console.error('*** ERROR: Unable to start the server.');
+                console.log (error);
+                }
+            else {
+                // Link to the database reference.
+                db = database;
+
+                console.log (' - The server has successfully started on port: ' + port)
+            }
+        });
+
     }
 });
+
 
 //---------------------------------------
 // Set the url routes the server can use.
 
-// Import tin the routes to use.
+// Import in the routes to use.
 var basicRoutes = require ('./routes/basic.js');
 
 // Set our server to use the basic routes.
@@ -55,3 +78,21 @@ server.use ('/', basicRoutes);
 // Connect the post routes.
 var postRoutes = require ('./routes/posts.js');
 server.use ('/post', postRoutes);
+
+// Connect the user routes.
+var userRoutes = require ('./routes/user.js');
+server.use ('/user', userRoutes);
+
+// Test a database query.
+server.get ('/test', function (request, response) {
+
+    // Pull a set of test users from the database.
+    //db.collection ('users').find ().toArray (function (error, result) {
+    //    console.log ('This is the result of the query: ', result);
+    //});
+    db.collection ('users').findOne ({ username: 'ronbravo'}, {}, function (error, result) {
+        console.log ('This is the result of the query: ', result);
+    });
+
+    response.send ('db test was run');
+});
