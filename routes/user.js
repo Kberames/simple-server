@@ -35,7 +35,7 @@ router.post ('/login', function (request, response) {
 
             if (error) {
                 console.error ('*** ERROR: Unable to connect to the database. ***');
-                response.send ('Server error');
+                response.send ('*** database error ***');
             }
             else if (result != null) {
                 // Logon successful
@@ -50,6 +50,51 @@ router.post ('/login', function (request, response) {
 
 });
 
+// Handles GET for register route
+router.get ('/register', function (request, response) {
+    //console.log ('Register user');
+    response.render ('register'); // brings up the register.hbs markpup
+});
+
+// Handles POST for register route
+router.post ('/register', function (request, response) {
+    //console.log ('Login working... username: ' + request.body.username);
+
+    db.collection ('users').insert (
+        {
+            username: request.body.username,
+            password: request.body.password,
+            email:    request.body.email
+        },
+
+        // Additional query options
+        {
+            //maxTimeMS: 1
+        },
+
+        // Callback function
+        function (error, result) {
+            console.log ('This is the result of the insert: ', result);
+            console.log ('error : ', error);
+
+            if (error) {
+                console.error ('*** ERROR: Unable to connect to the database. ***');
+                response.send ('*** database error ***');
+            }
+
+            else if (result != null) {
+                // Logon successful
+                response.redirect ('/');
+            }
+            else {
+                console.warn ('*** Error saving to database. ***');
+            }
+
+
+        }
+    );
+
+});
 
 // Export the router from this module.
 module.exports = router;
