@@ -9,7 +9,19 @@ var router = express.Router ();
 
 // Handles GET  for login route
 router.get ('/login', function (request, response) { // sets route to /user/login
-    response.render ('login'); // brings up the login.hbs markpup
+
+    // Test session data
+    //console.log ('This is my session: ', request.session);
+
+    // Check to see if the user session exists and
+    // the user is defined.
+    if (request.session.user) {
+        // Redirect to the dashboard.
+        response.redirect ('/user/dashboard');
+    }
+    else {
+        response.render ('login'); // brings up the login.hbs markpup
+    }
 });
 
 
@@ -39,7 +51,17 @@ router.post ('/login', function (request, response) {
             }
             else if (result != null) {
                 // Logon successful
-                response.redirect ('/post');
+
+                // Save the user to the session
+                console.log ('This is the found user: ', result);
+
+                request.session.user = {  // save only the necessary user info
+                    username: result.username,
+                    email: result.email
+                };
+                console.log ('This is the session data: ', request.session);
+
+                response.redirect ('/user/dashboard');
             }
             else {
                 console.warn ('*** Invalid username and password. ***');
@@ -60,7 +82,7 @@ router.get ('/register', function (request, response) {
 router.post ('/register', function (request, response) {
     //console.log ('Login working... username: ' + request.body.username);
 
-    db.collection ('users').insert (
+    db.collection ('users').insertOne (
         {
             username: request.body.username,
             password: request.body.password,
@@ -87,13 +109,42 @@ router.post ('/register', function (request, response) {
                 response.redirect ('/');
             }
             else {
-                console.warn ('*** Error saving to database. ***');
+                console.warn ('*** Error registering user. ***');
             }
 
 
         }
     );
 
+});
+
+// Handles GET  for dashboard route
+router.get ('/dashboard', function (request, response) { // sets route to /user/dashboard
+    //response.send ('You are now on the dashboard page.');
+
+    if (request.session.user) {
+        response.render ('dashboard', {
+            data: {
+                // Pass the session user to the template for
+                // rendering the user info.
+                user: request.session.user
+            }
+        });
+
+        //console.log ('session: ', request.session);
+
+    }
+    else {
+        response.redirect ('/user/login');        
+    }
+
+});
+
+// Handles GET  for logout route
+router.get ('/logout', function (request, response) { // sets route to /user/dashboard
+    request.session.destroy();
+    //console.log ('session logout: ', request.session);
+    response.redirect ('/user/login');
 });
 
 // Export the router from this module.
