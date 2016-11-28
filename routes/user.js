@@ -64,7 +64,11 @@ router.post ('/login', function (request, response) {
                 response.redirect ('/user/dashboard');
             }
             else {
+                // Problem with login credentials
                 console.warn ('*** Invalid username and password. ***');
+
+                request.flash ('error', 'Your username or password is not correct');
+                response.redirect ('/user/login');
             }
 
         }
@@ -135,7 +139,7 @@ router.get ('/dashboard', function (request, response) { // sets route to /user/
 
     }
     else {
-        response.redirect ('/user/login');        
+        response.redirect ('/user/login');
     }
 
 });

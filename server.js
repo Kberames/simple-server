@@ -4,6 +4,9 @@ var express = require ('express');
 // Create the express server app (instance of express).
 var server = express ();
 
+// Set the public folder that can be accessed by any public user.
+server.use (express.static ('public'));
+
 // Make sure the body-parser has been installed
 // (npm install body-parser --save)
 var bodyParser = require ('body-parser');
@@ -22,12 +25,22 @@ server.use (session ({
     saveUninitialized: true
 }));
 
+// Load in the connect-flash express middleware.
+var flash = require ('connect-flash');
+
+// Set our server app to use the flash message object.
+server.use (flash());
+
 // Set a global function that will be run before any of our
 // other routes are run.
 server.use (function (request, response, next) {
     // Set the local data in the template to
     // use the user session data.
     response.locals.user = request.session.user;
+
+    // Set the flash object to be used before
+    // running any other routes or functions.
+    response.locals.message = request.flash ();
 
     // Move on to the next route.
     // ***** research this function for better understanding
