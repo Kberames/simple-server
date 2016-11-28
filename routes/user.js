@@ -4,6 +4,9 @@ var express = require ('express');
 // Create an express router.
 var router = express.Router ();
 
+// Load the userSchema object.
+var User = require ('../model/user.js');
+
 // Define routes.
 // Login route
 
@@ -149,6 +152,50 @@ router.get ('/logout', function (request, response) { // sets route to /user/das
     request.session.destroy();
     //console.log ('session logout: ', request.session);
     response.redirect ('/user/login');
+});
+
+router.get ('/test', function (request, response){
+    // Now that we have our model, we will try
+    // to create a new user object based on the
+    // model.
+    var newUser = User ({
+        username: 'bob'
+    });
+
+    // Save the new user to the database.
+    newUser.save (function (error) {
+        if (error) {
+            console.error ('*** ERROR: Unable to save the user.');
+            console.error(error);
+        }
+        else {
+            console.log('User was successfully saved to db: ', newUser);
+
+            // Run a query to find a User object.
+            User.find ({ username: 'ronbravo'}, function (error, foundUser){
+                if (error) {
+                    console.error ('*** ERROR: Unable to find the user.');
+                    console.error (error);
+                }
+                else {
+                    console.log('User found: ', foundUser);
+                }
+            })
+
+            // Run a query where we search by the user object id.
+            // Used id for user 'tom' in my sample_database
+            User.findById ('5834cf66772dcd1cacd4243d', function (error, foundUser) {
+                if (error) {
+                    console.error ('*** ERROR: Unable to find the user by id.');
+                    console.error (error);
+                }
+                else {
+                    console.log('User found by id: ', foundUser);
+                }
+            })
+        }
+    })
+    console.log('This is the userSchema object', User);
 });
 
 // Export the router from this module.

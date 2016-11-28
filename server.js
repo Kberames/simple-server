@@ -125,9 +125,34 @@ server.get ('/test', function (request, response) {
     //db.collection ('users').find ().toArray (function (error, result) {
     //    console.log ('This is the result of the query: ', result);
     //});
-    db.collection ('users').findOne ({ username: 'ronbravo'}, {}, function (error, result) {
+    db.collection ('users').findOne ({ username: 'ronbravo'}, {},
+    function (error, result) {
         console.log ('This is the result of the query: ', result);
     });
 
     response.send ('db test was run');
 });
+
+//------------------------------------------------------------
+// Sandbox for Mongoose.
+
+// Load in the mongoose nodejs package. (not specific to express framework)
+var mongoose = require ('mongoose');
+
+// Connect mongoose to the mongodb server.
+mongoose.connect ('mongodb://localhost:27017/sample_database');
+
+/*
+// Grab the schema object from mongoose.
+var Schema = mongoose.Schema;
+
+// Create a schema for the User.
+var userSchema = new Schema ({
+    username: String,
+    password: String
+});
+
+// Take the userSchema object and create a
+// user model object for working with the mongodb.
+var User = mongoose.model ('User', userSchema);
+*/
